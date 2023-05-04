@@ -12,6 +12,7 @@
 #include "colors.h"
 #include "Matrix.h"
 #include "Tetris.h"
+#include "CTetris.h"
 
 using namespace std;
 
@@ -94,42 +95,42 @@ void registerAlarm() {
 #define MAX_BLK_TYPES 7
 #define MAX_BLK_DEGREES 4
 
-int T0D0[] = { 1, 1, 1, 1, -1 };
-int T0D1[] = { 1, 1, 1, 1, -1 };
-int T0D2[] = { 1, 1, 1, 1, -1 };
-int T0D3[] = { 1, 1, 1, 1, -1 };
+int T0D0[] = { 10, 10, 10, 10, -1 };
+int T0D1[] = { 10, 10, 10, 10, -1 };
+int T0D2[] = { 10, 10, 10, 10, -1 };
+int T0D3[] = { 10, 10, 10, 10, -1 };
 
-int T1D0[] = { 0, 1, 0, 1, 1, 1, 0, 0, 0, -1 };
-int T1D1[] = { 0, 1, 0, 0, 1, 1, 0, 1, 0, -1 };
-int T1D2[] = { 0, 0, 0, 1, 1, 1, 0, 1, 0, -1 };
-int T1D3[] = { 0, 1, 0, 1, 1, 0, 0, 1, 0, -1 };
+int T1D0[] = { 0, 20, 0, 20, 20, 20, 0, 0, 0, -1 };
+int T1D1[] = { 0, 20, 0, 0, 20, 20, 0, 20, 0, -1 };
+int T1D2[] = { 0, 0, 0, 20, 20, 20, 0, 20, 0, -1 };
+int T1D3[] = { 0, 20, 0, 20, 20, 0, 0, 20, 0, -1 };
 
-int T2D0[] = { 1, 0, 0, 1, 1, 1, 0, 0, 0, -1 };
-int T2D1[] = { 0, 1, 1, 0, 1, 0, 0, 1, 0, -1 };
-int T2D2[] = { 0, 0, 0, 1, 1, 1, 0, 0, 1, -1 };
-int T2D3[] = { 0, 1, 0, 0, 1, 0, 1, 1, 0, -1 };
+int T2D0[] = { 30, 0, 0, 30, 30, 30, 0, 0, 0, -1 };
+int T2D1[] = { 0, 30, 30, 0, 30, 0, 0, 30, 0, -1 };
+int T2D2[] = { 0, 0, 0, 30, 30, 30, 0, 0, 30, -1 };
+int T2D3[] = { 0, 30, 0, 0, 30, 0, 30, 30, 0, -1 };
 
-int T3D0[] = { 0, 0, 1, 1, 1, 1, 0, 0, 0, -1 };
-int T3D1[] = { 0, 1, 0, 0, 1, 0, 0, 1, 1, -1 };
-int T3D2[] = { 0, 0, 0, 1, 1, 1, 1, 0, 0, -1 };
-int T3D3[] = { 1, 1, 0, 0, 1, 0, 0, 1, 0, -1 };
+int T3D0[] = { 0, 0, 40, 40, 40, 40, 0, 0, 0, -1 };
+int T3D1[] = { 0, 40, 0, 0, 40, 0, 0, 40, 40, -1 };
+int T3D2[] = { 0, 0, 0, 40, 40, 40, 40, 0, 0, -1 };
+int T3D3[] = { 40, 40, 0, 0, 40, 0, 0, 40, 0, -1 };
 
-int T4D0[] = { 0, 1, 0, 1, 1, 0, 1, 0, 0, -1 };
-int T4D1[] = { 1, 1, 0, 0, 1, 1, 0, 0, 0, -1 };
-int T4D2[] = { 0, 1, 0, 1, 1, 0, 1, 0, 0, -1 };
-int T4D3[] = { 1, 1, 0, 0, 1, 1, 0, 0, 0, -1 };
+int T4D0[] = { 0, 50, 0, 50, 50, 0, 50, 0, 0, -1 };
+int T4D1[] = { 50, 50, 0, 0, 50, 50, 0, 0, 0, -1 };
+int T4D2[] = { 0, 50, 0, 50, 50, 0, 50, 0, 0, -1 };
+int T4D3[] = { 50, 50, 0, 0, 50, 50, 0, 0, 0, -1 };
 
-int T5D0[] = { 0, 1, 0, 0, 1, 1, 0, 0, 1, -1 };
-int T5D1[] = { 0, 0, 0, 0, 1, 1, 1, 1, 0, -1 };
-int T5D2[] = { 0, 1, 0, 0, 1, 1, 0, 0, 1, -1 };
-int T5D3[] = { 0, 0, 0, 0, 1, 1, 1, 1, 0, -1 };
+int T5D0[] = { 0, 60, 0, 0, 60, 60, 0, 0, 60, -1 };
+int T5D1[] = { 0, 0, 0, 0, 60, 60, 60, 60, 0, -1 };
+int T5D2[] = { 0, 60, 0, 0, 60, 60, 0, 0, 60, -1 };
+int T5D3[] = { 0, 0, 0, 0, 60, 60, 60, 60, 0, -1 };
 
-int T6D0[] = { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1 };
-int T6D1[] = { 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 };
-int T6D2[] = { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1 };
-int T6D3[] = { 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 };
+int T6D0[] = { 0, 0, 0, 0, 70, 70, 70, 70, 0, 0, 0, 0, 0, 0, 0, 0, -1 };
+int T6D1[] = { 0, 70, 0, 0, 0, 70, 0, 0, 0, 70, 0, 0, 0, 70, 0, 0, -1 };
+int T6D2[] = { 0, 0, 0, 0, 70, 70, 70, 70, 0, 0, 0, 0, 0, 0, 0, 0, -1 };
+int T6D3[] = { 0, 70, 0, 0, 0, 70, 0, 0, 0, 70, 0, 0, 0, 70, 0, 0, -1 };
   
-int *setOfBlockArrays[] = {
+int *setOfColorBlockArrays[] = {
   T0D0, T0D1, T0D2, T0D3,
   T1D0, T1D1, T1D2, T1D3,
   T2D0, T2D1, T2D2, T2D3,
@@ -179,30 +180,33 @@ void drawScreen(Matrix *screen, int wall_depth)
 
 int main(int argc, char *argv[]) {
   char key;
-  registerAlarm(); // register one-second timer
+  //registerAlarm(); // register one-second timer
   srand((unsigned int)time(NULL)); // init the random number generator
   
   TetrisState state;
-  Tetris::init(setOfBlockArrays, MAX_BLK_TYPES, MAX_BLK_DEGREES);
-  Tetris *board = new Tetris(10, 10);
+  CTetris::init(setOfColorBlockArrays, MAX_BLK_TYPES, MAX_BLK_DEGREES);
+  CTetris *board = new CTetris(10, 10);
   key = (char) ('0' + rand() % board->get_numTypes());
   board->accept(key);
   drawScreen(board->get_oScreen(), board->get_wallDepth()); cout << endl;
+  drawScreen(board->get_oCScreen(), board->get_wallDepth()); cout << endl;
 
   while ((key = getch()) != 'q') {
     state = board->accept(key);
     drawScreen(board->get_oScreen(), board->get_wallDepth()); cout << endl;
+    drawScreen(board->get_oCScreen(), board->get_wallDepth()); cout << endl;
     if (state == TetrisState::NewBlock) {
       key = (char) ('0' + rand() % board->get_numTypes());
       state = board->accept(key);
       drawScreen(board->get_oScreen(), board->get_wallDepth()); cout << endl;
+      drawScreen(board->get_oCScreen(), board->get_wallDepth()); cout << endl;
       if (state == TetrisState::Finished) 
         break;
     }
   }
 
   delete board;
-  Tetris::deinit();
+  CTetris::deinit();
   cout << "(nAlloc, nFree) = (" << Matrix::get_nAlloc() << ',' << Matrix::get_nFree() << ")" << endl;  
   cout << "Program terminated!" << endl;
   return 0;
