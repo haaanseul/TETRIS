@@ -92,15 +92,10 @@ TetrisState CTetris::accept(char key) {
   oCScreen->paste(tempBlk2, top, left);
   delete tempBlk2;
 
-  if (_state == TetrisState::Running) {
-    if (tempBlk2->anyGreaterThan(1)) {
+  if (_state == TetrisState::NewBlock){
       oCScreen = deleteFullLines(oCScreen, currCBlk, top, wallDepth);
       iCScreen->paste(oCScreen, 0, 0);
-      _state = TetrisState::NewBlock;
-    }
-      return _state;
   }
 
-  
   return _state;
 }
