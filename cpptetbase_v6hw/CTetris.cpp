@@ -28,8 +28,8 @@ void CTetris::init(int **setOfColorBlockArrays, int nTypes, int nDegrees) {
     // for (idx = 0; array[idx] != -1 ; idx++); // find the element of -1 in array[]
     // for (size = 0; size*size < idx; size++); // comupte the square root of idx
     for (int d = 0; d < numDegrees; d++) {
-      Matrix *size_Object = setOfBlockObjects[t][d]; 
-      int size = size_Object->get_dx();
+      Matrix *getsize = setOfBlockObjects[t][d]; 
+      int size = getsize->get_dx();
       int *array2 = new int[size*size+1];
       int k;
       for (k = 0; k < size*size; k++){
@@ -83,5 +83,24 @@ TetrisState CTetris::accept(char key) {
 
   // write the rest of this function!!
 
+  currCBlk = setOfColorBlockObjects[type][degree];
+  Matrix *tempBlk = iCScreen->clip(top, left, top + currCBlk->get_dy(), left + currCBlk->get_dx());
+  Matrix *tempBlk2 = tempBlk->add(currCBlk);
+  delete tempBlk;
+
+  oCScreen->paste(iCScreen, 0, 0);
+  oCScreen->paste(tempBlk2, top, left);
+  delete tempBlk2;
+
+  if (_state == TetrisState::Running) {
+    if (tempBlk2->anyGreaterThan(1)) {
+      oCScreen = deleteFullLines(oCScreen, currCBlk, top, wallDepth);
+      iCScreen->paste(oCScreen, 0, 0);
+      _state = TetrisState::NewBlock;
+    }
+      return _state;
+  }
+
+  
   return _state;
 }
