@@ -232,42 +232,86 @@ public:
     }
 };
 
-Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int dw) {
-  Matrix *line, *bline, *zero, *temp;
-  int cy, y;
-  int nDeleted, nScanned;
+Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw) {
+  Matrix  *line_h, *line_v, *bline_h, *bline_v, *zero_h, *zero_v;
+  int cy, y, cx, x;
+  int nDeleted, nDeleted_h, nDeleted_v, nScanned_h, nScanned_v;
   int ws_dy = screen->get_dy() - 2*dw;
   int ws_dx = screen->get_dx() - 2*dw;
 
-  if (top + blk->get_dy() > ws_dy + dw)
-    nScanned = ws_dy + dw - top;
+  if (top + blk->get_dy() > ws_dy + dw) // 행 삭제 h
+    nScanned_h = ws_dy + dw - top;
   else
-    nScanned = blk->get_dy();
-  
-  zero = new Matrix(1, ws_dx);
-  for (y = nScanned - 1, nDeleted = 0; y >= 0; y--) {
+    nScanned_h = blk->get_dy();
+
+  if (left + blk->get_dx() > ws_dx + dw) // 열 삭제 v
+    nScanned_v = ws_dx + dw - left;
+  else
+    nScanned_v = blk->get_dx();
+
+  zero_h = new Matrix(1, ws_dx);
+  zero_v = new Matrix(ws_dy, 1);
+
+
+  // for (y = nScanned_h - 1, nDeleted_h = 0; y >= 0; y--) {
+  //     cy = top + y + nDeleted;
+  //     line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
+  //     bline_h = line_h->int2bool();
+  //     delete line_h;
+  //   for (x = nScanned_v - 1, nDeleted_v = 0; x >= 0; x--){
+  //     cx = left + x + nDeleted;
+  //     line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
+  //     bline_v = line_v->int2bool(); // binary version of line
+  //     delete line_v;
+  //     if ((bline_v->sum() == ws_dx) && (bline_h->sum() == ws_dy)) {
+  //       screen->paste(zero_v, top, dw);
+  //       screen->paste(zero_h, dw, left);
+  //       nDeleted_v++;
+  //       nDeleted_h++;
+  //     }
+  //     delete bline_v;
+  //   }
+  //   delete bline_h;
+  //   }
+
+
+  for (y = nScanned_h - 1, nDeleted = 0; y >= 0; y--) { // 행 삭제
     cy = top + y + nDeleted;
-    line = screen->clip(cy, dw, cy+1, dw + ws_dx);
-    bline = line->int2bool(); // binary version of line
-    delete line;
-    if (bline->sum() == ws_dx) {
-      // temp = screen->clip(dw, dw, cy, dw + ws_dx);
-      // screen->paste(temp, dw+1, dw);
-      screen->paste(zero, top, dw);
+    line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
+    bline_h = line_h->int2bool(); // binary version of line
+    delete line_h;
+    if (bline_h->sum() == ws_dx) {
+      screen->paste(zero_h, top+1, dw);
       nDeleted++;
-      // delete temp;
     }
-    delete bline; 
+    delete bline_h; 
   }
-  delete zero;
+  delete zero_h;
+
+
+  for (x = nScanned_v - 1, nDeleted = 0; x >= 0; x--) { // 열 삭제
+    cx = left + x + nDeleted;
+    line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
+    bline_v = line_v->int2bool(); // binary version of line
+    delete line_v;
+    if (bline_v->sum() == ws_dy) {
+      screen->paste(zero_v, dw, left+2);
+      nDeleted++;
+    }
+    delete bline_v; 
+  }
+  delete zero_v;
+
   return screen;
 }
+
+// 둘 다 삭제할 거를 저장해놓고 한번에 paste
 
 class MyOnNewBlock : public ActionHandler { // 여기서 MydeleteFullLines 함수로 바꾸기
 public:
     void run(Tetris *t, char key) {
         if (t->currBlk != NULL) // why test currBlk != NULL?
-            t->oScreen = mydeleteFullLines(t->oScreen, t->currBlk, t->top, t->wallDepth);
+            t->oScreen = mydeleteFullLines(t->oScreen, t->currBlk, t->top, t->left, t->wallDepth);
         t->iScreen->paste(t->oScreen, 0, 0);
         // select a new block
         t->type = key - '0';
@@ -305,8 +349,6 @@ int main(int argc, char *argv[]) {
   Tetris::setOperation('6', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   /////////////////////////////////////////////////////////////////////////
 
-// 0-6키 preState 오류 수정해야됨
-// 딜리트라인 만들기
 
   Tetris *board = new Tetris(10, 10);
   key = (char) ('0' + rand() % board->get_numTypes());
