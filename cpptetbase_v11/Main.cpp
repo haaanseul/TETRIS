@@ -179,7 +179,7 @@ void drawScreen(Matrix *screen, int wall_depth)
     cout << digit << endl;
   }
 }
-  
+
 /**************************************************************/
 /******************** Tetris Main Loop ************************/
 /**************************************************************/
@@ -187,22 +187,62 @@ void drawScreen(Matrix *screen, int wall_depth)
 class MyOnLeft : public ActionHandler {
 public:
     void run(Tetris *t, char key) {
-        t->left = t->left - 1;
-        return;
+        if (t->left > 0){
+          t->left = t->left - 1;
+          return;
+        }
     }
 };
 
 class MyOnRight : public ActionHandler {
 public:
     void run(Tetris *t, char key) {
-        t->left = t->left + 1;
+        if (t->left < t->rows - t->wallDepth){
+          t->left = t->left + 1;
+          return;
+        }
+    }
+};
+
+class MyOnUp : public ActionHandler {
+public:
+    void run(Tetris *t, char key) {
+        if (t->top > 0){
+          t->top = t->top - 1;
+          return;
+        }
+    }
+};
+
+class MyOnDown : public ActionHandler {
+public:
+    void run(Tetris *t, char key) {
+        if (t->top < t->cols - t->wallDepth){
+          t->top = t->top + 1;
+          return;
+        }
+    }
+};
+
+
+class MyDummy : public ActionHandler { // 여기에 안겹쳐야 멈추는 거 넣어줘야 할까
+public:
+    void run(Tetris *t, char key) {
         return;
     }
 };
 
+class MyStay : public ActionHandler { // 여기에 안겹쳐야 멈추는 거 넣어줘야 할까
+public:
+    void run(Tetris *t, char key) {
+        return;
+    }
+};
+
+
 int main(int argc, char *argv[]) {
   char key;
-  registerAlarm(); // register one-second timer
+  // registerAlarm(); // register one-second timer
   srand((unsigned int)time(NULL)); // init the random number generator
   
   TetrisState state;
@@ -211,12 +251,12 @@ int main(int argc, char *argv[]) {
   /////////////////////////////////////////////////////////////////////////
   /// Plug-in architecture for generalized Tetris class
   /////////////////////////////////////////////////////////////////////////
-  Tetris::setOperation('a', TetrisState::Running, new MyOnLeft(),    TetrisState::Running, new MyOnRight(), TetrisState::Running);
-  Tetris::setOperation('d', TetrisState::Running, new MyOnRight(), TetrisState::Running, new MyOnLeft(),    TetrisState::Running);
-  Tetris::setOperation('s', TetrisState::Running, new OnDown(), TetrisState::Running, new OnUp(),     TetrisState::NewBlock);
-  // Tetris::setOperation('e', TetrisState::Running, new OnUp(), TetrisState::Running, new OnDrop(),     TetrisState::NewBlock);
-  Tetris::setOperation('w', TetrisState::Running,  new OnClockWise(),    TetrisState::Running, new OnCounterClockWise(),  TetrisState::Running);
-  Tetris::setOperation(' ', TetrisState::Running, new OnDrop(),   TetrisState::Running, new OnUp(),     TetrisState::NewBlock);
+  Tetris::setOperation('a', TetrisState::Running, new MyOnLeft(),    TetrisState::Running, new MyDummy(), TetrisState::Running);
+  Tetris::setOperation('d', TetrisState::Running, new MyOnRight(), TetrisState::Running, new MyDummy(),    TetrisState::Running);
+  Tetris::setOperation('s', TetrisState::Running, new MyOnDown(), TetrisState::Running, new MyDummy(),     TetrisState::Running);
+  Tetris::setOperation('e', TetrisState::Running, new MyOnUp(), TetrisState::Running, new MyDummy(),     TetrisState::Running);
+  Tetris::setOperation('w', TetrisState::Running,  new OnClockWise(),    TetrisState::Running, new MyDummy(),  TetrisState::Running);
+  Tetris::setOperation(' ', TetrisState::Running, new MyStay(),   TetrisState::NewBlock, new MyStay(),     TetrisState::NewBlock);
   Tetris::setOperation('0', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   Tetris::setOperation('1', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   Tetris::setOperation('2', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
@@ -225,6 +265,8 @@ int main(int argc, char *argv[]) {
   Tetris::setOperation('5', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   Tetris::setOperation('6', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   /////////////////////////////////////////////////////////////////////////
+
+
 
   Tetris *board = new Tetris(10, 10);
   key = (char) ('0' + rand() % board->get_numTypes());

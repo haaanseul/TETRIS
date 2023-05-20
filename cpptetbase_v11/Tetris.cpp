@@ -39,6 +39,7 @@ void Tetris::setDefaultOperations(void) {
   setOperation('a', TetrisState::Running, new OnLeft(), TetrisState::Running, new OnRight(), TetrisState::Running);
   setOperation('d', TetrisState::Running, new OnRight(), TetrisState::Running, new OnLeft(), TetrisState::Running);
   setOperation('s', TetrisState::Running, new OnDown(), TetrisState::Running, new OnUp(), TetrisState::NewBlock);
+  setOperation('e', TetrisState::Running, new OnUp(), TetrisState::Running, new OnUp(), TetrisState::NewBlock);
   setOperation('w', TetrisState::Running, new OnClockWise(), TetrisState::Running, new OnCounterClockWise(), TetrisState::Running);
   setOperation(' ', TetrisState::Running, new OnDrop(), TetrisState::Running, new OnUp(), TetrisState::NewBlock);
   setOperation('0', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
