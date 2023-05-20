@@ -225,20 +225,28 @@ public:
 };
 
 
-class MyDummy : public ActionHandler { // 여기에 안겹쳐야 멈추는 거 넣어줘야 할까
+class MyDummy : public ActionHandler {
 public:
     void run(Tetris *t, char key) {
         return;
     }
 };
 
-class MyStay : public ActionHandler { // 여기에 안겹쳐야 멈추는 거 넣어줘야 할까
+class MyOnNewBlock : public ActionHandler { // 여기서 MydeleteFullLines 함수로 바꾸기
 public:
     void run(Tetris *t, char key) {
+        if (t->currBlk != NULL) // why test currBlk != NULL?
+            t->oScreen = deleteFullLines(t->oScreen, t->currBlk, t->top, t->wallDepth);
+        t->iScreen->paste(t->oScreen, 0, 0);
+        // select a new block
+        t->type = key - '0';
+        t->degree = 0;
+        t->top = t->wallDepth; 
+        t->left = t->cols/2 - t->wallDepth/2;
+        t->currBlk = t->setOfBlockObjects[t->type][t->degree];
         return;
-    }
+    }    
 };
-
 
 int main(int argc, char *argv[]) {
   char key;
@@ -256,7 +264,7 @@ int main(int argc, char *argv[]) {
   Tetris::setOperation('s', TetrisState::Running, new MyOnDown(), TetrisState::Running, new MyDummy(),     TetrisState::Running);
   Tetris::setOperation('e', TetrisState::Running, new MyOnUp(), TetrisState::Running, new MyDummy(),     TetrisState::Running);
   Tetris::setOperation('w', TetrisState::Running,  new OnClockWise(),    TetrisState::Running, new MyDummy(),  TetrisState::Running);
-  Tetris::setOperation(' ', TetrisState::Running, new MyStay(),   TetrisState::NewBlock, new MyStay(),     TetrisState::NewBlock);
+  Tetris::setOperation(' ', TetrisState::Running, new MyDummy(),   TetrisState::NewBlock, new MyDummy(),     TetrisState::Running);
   Tetris::setOperation('0', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   Tetris::setOperation('1', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   Tetris::setOperation('2', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
@@ -266,7 +274,8 @@ int main(int argc, char *argv[]) {
   Tetris::setOperation('6', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   /////////////////////////////////////////////////////////////////////////
 
-
+// 0-6키 preState 오류 수정해야됨
+// 딜리트라인 만들기
 
   Tetris *board = new Tetris(10, 10);
   key = (char) ('0' + rand() % board->get_numTypes());
