@@ -232,11 +232,42 @@ public:
     }
 };
 
+Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int dw) {
+  Matrix *line, *bline, *zero, *temp;
+  int cy, y;
+  int nDeleted, nScanned;
+  int ws_dy = screen->get_dy() - 2*dw;
+  int ws_dx = screen->get_dx() - 2*dw;
+
+  if (top + blk->get_dy() > ws_dy + dw)
+    nScanned = ws_dy + dw - top;
+  else
+    nScanned = blk->get_dy();
+  
+  zero = new Matrix(1, ws_dx);
+  for (y = nScanned - 1, nDeleted = 0; y >= 0; y--) {
+    cy = top + y + nDeleted;
+    line = screen->clip(cy, dw, cy+1, dw + ws_dx);
+    bline = line->int2bool(); // binary version of line
+    delete line;
+    if (bline->sum() == ws_dx) {
+      // temp = screen->clip(dw, dw, cy, dw + ws_dx);
+      // screen->paste(temp, dw+1, dw);
+      screen->paste(zero, top, dw);
+      nDeleted++;
+      // delete temp;
+    }
+    delete bline; 
+  }
+  delete zero;
+  return screen;
+}
+
 class MyOnNewBlock : public ActionHandler { // 여기서 MydeleteFullLines 함수로 바꾸기
 public:
     void run(Tetris *t, char key) {
         if (t->currBlk != NULL) // why test currBlk != NULL?
-            t->oScreen = deleteFullLines(t->oScreen, t->currBlk, t->top, t->wallDepth);
+            t->oScreen = mydeleteFullLines(t->oScreen, t->currBlk, t->top, t->wallDepth);
         t->iScreen->paste(t->oScreen, 0, 0);
         // select a new block
         t->type = key - '0';
@@ -265,13 +296,13 @@ int main(int argc, char *argv[]) {
   Tetris::setOperation('e', TetrisState::Running, new MyOnUp(), TetrisState::Running, new MyDummy(),     TetrisState::Running);
   Tetris::setOperation('w', TetrisState::Running,  new OnClockWise(),    TetrisState::Running, new MyDummy(),  TetrisState::Running);
   Tetris::setOperation(' ', TetrisState::Running, new MyDummy(),   TetrisState::NewBlock, new MyDummy(),     TetrisState::Running);
-  Tetris::setOperation('0', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('1', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('2', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('3', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('4', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('5', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
-  Tetris::setOperation('6', TetrisState::NewBlock, new OnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('0', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('1', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('2', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('3', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('4', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('5', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
+  Tetris::setOperation('6', TetrisState::NewBlock, new MyOnNewBlock(), TetrisState::Running, new OnFinished(), TetrisState::Finished);
   /////////////////////////////////////////////////////////////////////////
 
 // 0-6키 preState 오류 수정해야됨
