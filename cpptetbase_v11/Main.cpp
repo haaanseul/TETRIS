@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <stdio.h>
@@ -252,53 +252,71 @@ Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw
   zero_h = new Matrix(1, ws_dx);
   zero_v = new Matrix(ws_dy, 1);
 
+  int harr[ws_dy];
+  int varr[ws_dx];
 
-  for (y = nScanned_h - 1; y >= 0; y--) {
-      cy = top + y;
+  int i = 0;
+  for (y = 0; y < ws_dy; y++, i++) {
+      cy = dw + y;
       line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
       bline_h = line_h->int2bool();
       delete line_h;
-    for (x = nScanned_v - 1; x >= 0; x--){
-      cx = left + x;
+
+      if (bline_h->sum() == ws_dx){
+        harr[i] = cy;
+      }
+      else{
+        harr[i] = -1;
+      }
+      delete bline_h;
+      }
+
+  int j = 0;
+  for (x = 0; x < ws_dx; x++, j++){
+      cx = dw + x;
+      std::cout<<cx<<endl;
       line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
       bline_v = line_v->int2bool(); // binary version of line
       delete line_v;
-      if ((bline_v->sum() == ws_dx) && (bline_h->sum() == ws_dy)) {
-        screen->paste(zero_v, dw, cx);
-        screen->paste(zero_h, cy, dw);
+
+      if (bline_v->sum() == ws_dy){
+          varr[j] = cx;
+      }
+      else{
+        varr[j] = -1;
       }
       delete bline_v;
+      }
+
+    int harrsize = sizeof(harr) / sizeof(harr[0]);
+    int varrsize = sizeof(varr) / sizeof(varr[0]);
+
+  for (int a=0; a<harrsize; a++)
+    std::cout<<harr[a]<<endl;
+
+  for (int a=0; a<varrsize; a++)
+    std::cout<<varr[a]<<endl;
+
+    if (harrsize != NULL){
+        for (int arr_reph = 0; arr_reph < harrsize; arr_reph++){
+          if (harr[arr_reph] != -1){
+            screen->paste(zero_h, harr[arr_reph], dw);
+          }
+        }
     }
-    delete bline_h;
+
+    if (varrsize != NULL){
+        for (int arr_repv = 0; arr_repv < varrsize; arr_repv++){
+          if (varr[arr_repv] != -1){
+            screen->paste(zero_v, dw, varr[arr_repv]);
+          }
+        }
     }
 
+    delete zero_h;
+    delete zero_v;
 
-  for (y = nScanned_h - 1; y >= 0; y--) { // 행 삭제
-    cy = top + y;
-    line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
-    bline_h = line_h->int2bool(); // binary version of line
-    delete line_h;
-    if (bline_h->sum() == ws_dx) {
-      screen->paste(zero_h, cy, dw);
-    }
-    delete bline_h; 
-  }
-  delete zero_h;
-
-
-  for (x = nScanned_v - 1; x >= 0; x--) { // 열 삭제
-    cx = left + x;
-    line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
-    bline_v = line_v->int2bool(); // binary version of line
-    delete line_v;
-    if (bline_v->sum() == ws_dy) {
-      screen->paste(zero_v, dw, cx);
-    }
-    delete bline_v; 
-  }
-  delete zero_v;
-
-  return screen;
+    return screen;
 }
 
 // 둘 다 삭제할 거를 저장해놓고 한번에 paste
