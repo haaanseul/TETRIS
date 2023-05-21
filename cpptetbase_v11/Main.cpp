@@ -235,19 +235,19 @@ public:
 Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw) {
   Matrix  *line_h, *line_v, *bline_h, *bline_v, *zero_h, *zero_v;
   int cy, y, cx, x;
-  int nDeleted, nDeleted_h, nDeleted_v, nScanned_h, nScanned_v;
+  // int nDeleted, nDeleted_h, nDeleted_v, nScanned_h, nScanned_v;
   int ws_dy = screen->get_dy() - 2*dw;
   int ws_dx = screen->get_dx() - 2*dw;
 
-  if (top + blk->get_dy() > ws_dy + dw) // 행 삭제 h
-    nScanned_h = ws_dy + dw - top;
-  else
-    nScanned_h = blk->get_dy();
+  // if (top + blk->get_dy() > ws_dy + dw) // 행 삭제 h
+  //   nScanned_h = ws_dy + dw - top;
+  // else
+  //   nScanned_h = blk->get_dy();
 
-  if (left + blk->get_dx() > ws_dx + dw) // 열 삭제 v
-    nScanned_v = ws_dx + dw - left;
-  else
-    nScanned_v = blk->get_dx();
+  // if (left + blk->get_dx() > ws_dx + dw) // 열 삭제 v
+  //   nScanned_v = ws_dx + dw - left;
+  // else
+  //   nScanned_v = blk->get_dx();
 
   zero_h = new Matrix(1, ws_dx);
   zero_v = new Matrix(ws_dy, 1);
@@ -291,11 +291,11 @@ Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw
     int harrsize = sizeof(harr) / sizeof(harr[0]);
     int varrsize = sizeof(varr) / sizeof(varr[0]);
 
-  for (int a=0; a<harrsize; a++)
-    std::cout<<harr[a]<<endl;
+  // for (int a=0; a<harrsize; a++)
+  //   std::cout<<harr[a]<<endl;
 
-  for (int a=0; a<varrsize; a++)
-    std::cout<<varr[a]<<endl;
+  // for (int a=0; a<varrsize; a++)
+  //   std::cout<<varr[a]<<endl;
 
     if (harrsize != NULL){
         for (int arr_reph = 0; arr_reph < harrsize; arr_reph++){
