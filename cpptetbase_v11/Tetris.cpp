@@ -237,18 +237,19 @@ TetrisState Tetris::accept(char key) {
     cout << "wrong preState for the current key!" << endl;
     return state;
   }
-  op->hAction->run(this, key);
-  Matrix *tempBlk = overlap_currBlk();
-  if (anyConflict(tempBlk) == false) {
-    state = op->postAState;
+  op->hAction->run(this, key); // onLeft 머 이런 함수들의 run 함수 실행
+  Matrix *tempBlk = overlap_currBlk(); // iScreen에 붙임
+  if (anyConflict(tempBlk) == false) { // 충돌 테스트를 통해 충돌이 없는 경우
+    state = op->postAState; // 작업의 사후 A 상태로 상태를 변경합니다.
   }
   else {
-    op->hCounterAction->run(this, key); 
+    op->hCounterAction->run(this, key); // 반대 동작을 실행합니다. (예: onRight -> onLeft)
     delete tempBlk;
-    tempBlk = overlap_currBlk();
-    state = op->postCState;
+    tempBlk = overlap_currBlk(); // 블록을 다시 iScreen에 겹쳐봅니다.
+    state = op->postCState; // 작업의 사후 C 상태로 상태를 변경합니다.
   }
-  update_oScreen(tempBlk, top, left);
+  update_oScreen(tempBlk, top, left); // oScreen을 업데이트합니다.
   delete tempBlk;
-  return state;
+  return state; // 변경된 상태를 반환합니다.
+
 }

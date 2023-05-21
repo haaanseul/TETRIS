@@ -253,21 +253,19 @@ Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw
   zero_v = new Matrix(ws_dy, 1);
 
 
-  // for (y = nScanned_h - 1, nDeleted_h = 0; y >= 0; y--) {
-  //     cy = top + y + nDeleted;
+  // for (y = nScanned_h - 1; y >= 0; y--) {
+  //     cy = top + y;
   //     line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
   //     bline_h = line_h->int2bool();
   //     delete line_h;
-  //   for (x = nScanned_v - 1, nDeleted_v = 0; x >= 0; x--){
-  //     cx = left + x + nDeleted;
+  //   for (x = nScanned_v - 1; x >= 0; x--){
+  //     cx = left + x;
   //     line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
   //     bline_v = line_v->int2bool(); // binary version of line
   //     delete line_v;
   //     if ((bline_v->sum() == ws_dx) && (bline_h->sum() == ws_dy)) {
-  //       screen->paste(zero_v, top, dw);
-  //       screen->paste(zero_h, dw, left);
-  //       nDeleted_v++;
-  //       nDeleted_h++;
+  //       screen->paste(zero_v, dw, left);
+  //       screen->paste(zero_h, top, dw);
   //     }
   //     delete bline_v;
   //   }
@@ -275,28 +273,26 @@ Matrix *mydeleteFullLines(Matrix *screen, Matrix *blk, int top, int left, int dw
   //   }
 
 
-  for (y = nScanned_h - 1, nDeleted = 0; y >= 0; y--) { // 행 삭제
-    cy = top + y + nDeleted;
+  for (y = nScanned_h - 1; y >= 0; y--) { // 행 삭제
+    cy = top + y;
     line_h = screen->clip(cy, dw, cy+1, dw + ws_dx);
     bline_h = line_h->int2bool(); // binary version of line
     delete line_h;
     if (bline_h->sum() == ws_dx) {
-      screen->paste(zero_h, top+1, dw);
-      nDeleted++;
+      screen->paste(zero_h, cy, dw);
     }
     delete bline_h; 
   }
   delete zero_h;
 
 
-  for (x = nScanned_v - 1, nDeleted = 0; x >= 0; x--) { // 열 삭제
-    cx = left + x + nDeleted;
+  for (x = nScanned_v - 1; x >= 0; x--) { // 열 삭제
+    cx = left + x;
     line_v = screen->clip(dw, cx, dw + ws_dy, cx+1);
     bline_v = line_v->int2bool(); // binary version of line
     delete line_v;
     if (bline_v->sum() == ws_dy) {
-      screen->paste(zero_v, dw, left+2);
-      nDeleted++;
+      screen->paste(zero_v, dw, cx);
     }
     delete bline_v; 
   }
