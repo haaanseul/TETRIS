@@ -230,6 +230,11 @@ void drawScreen(Matrix *screen, int wall_depth, Window *win) {
 
 static ifstream infStream;
 static ofstream outfStream;
+string ten = "";
+char cten[10];
+string lastsave = "";
+string save = "";
+int readcount = -1;
 
 char getTetrisKey(TetrisState state, bool fromUser, bool toFile) {
   char key;
@@ -239,6 +244,8 @@ char getTetrisKey(TetrisState state, bool fromUser, bool toFile) {
       key = (char) ('0' + rand() % MAX_BLK_TYPES);
     else
       key = tty_getch();
+
+    ten.push_back(key);
   }
   else { // fromUser == false
     if (infStream.is_open() == false) {
@@ -248,17 +255,28 @@ char getTetrisKey(TetrisState state, bool fromUser, bool toFile) {
         exit(1);
       }
     }
-    if (infStream.eof() == true)
+    if (infStream.eof() == true){
       key = 'q';
-    else
-      infStream.get(key); // why not "infStream >> key" ?
-
+    }
+    else{
+      // infStream.get(key); // why not "infStream >> key" ?
+      if (readcount == -1 || readcount == 10){
+        cten[0] = '\0';
+        save = "";
+        infStream.read(cten, 10);
+        save = cten;
+        readcount = 0;
+      }
+      key = save[0];
+      save.erase(save.begin());
+      readcount += 1;
+    }
     usleep(100000); // 100 ms
   }
 
   if (toFile == true) {
     if (outfStream.is_open() == false) {
-      outfStream.open("keyseq.txt");
+      outfStream.open("keyseq.txt", ios::app);
       if (outfStream.fail()) {
         cout << "keyseq.txt cannot be opened!" << endl;
         exit(1);
@@ -266,7 +284,12 @@ char getTetrisKey(TetrisState state, bool fromUser, bool toFile) {
       // outfStream.close(); // truncate the existing file
       // outfStream.open("keyseq.txt", ios::app);
     }
-    outfStream << key;
+    if (ten.size()%10==0){ //10단위 확인
+        // outfStream << ten;
+        // outfStream << " ";
+        outfStream.write(ten.c_str(), 10);
+        ten = "";
+    }
   }
 
   return key;
@@ -336,16 +359,18 @@ int main(int argc, char *argv[]) {
       state = board->accept(key);
       drawScreen(board->get_oScreen(), board->get_wallDepth(), &left_win); 
       drawScreen(board->get_oCScreen(), board->get_wallDepth(), &rght_win); 
-      if (state == TetrisState::Finished) 
+      if (state == TetrisState::Finished)
         break;
     }
   }
 
-  if (infStream.is_open() == true) 
+  if (infStream.is_open() == true) // 여기서 저장
     infStream.close();
 
-  if (outfStream.is_open() == true) 
+  if (outfStream.is_open() == true){
+    outfStream << ten;
     outfStream.close();
+  }
 
   bttm_win.printw("Program terminated!\n");
   sleep(5);
